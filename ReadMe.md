@@ -71,7 +71,7 @@ The project consists of a single C file (`miniProject.c`) that implements the fo
 - Drives the six seven-segment displays using multiplexing.
 - Handles button debouncing and time adjustment in countdown mode.
 
-```
+
 
 ## Simulation
 
