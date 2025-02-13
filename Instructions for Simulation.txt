@@ -1,0 +1,15 @@
+The simulation of this project is developed using "SimulIDE" tool 
+
+You can download the tool from "https://simulide.com/p/"
+
+This tool is light and portable, just download and extract then open the .exe file included.
+
+The simulation file of the project is "interfacing1_miniProject.sim1"
+press right click on it 
+                    >> Choose "open with" 
+                        >> Navigate to the extracted file of the tool and select the .exe file
+You need to do these steps at the first usage only, then feel free to open it directly by Double Clicks. 
+
+To run the simulation, Click on "Start Simulation" button on the upper toolbar.
+
+Thanks in advance,

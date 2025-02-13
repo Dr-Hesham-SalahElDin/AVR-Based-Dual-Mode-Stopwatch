@@ -1,0 +1,88 @@
+/*
+ * miniProject.c
+ *
+ *  Created on: Feb 10, 2025
+ *      Author: Hesham
+ */
+
+#include<avr/io.h>
+#include<avr/interrupt.h>
+#include<util/delay.h>
+
+void timer1_CTC_init(void);
+typedef enum{COUNT_UP, COUNT_DWN}Timer_Mode;
+
+char seconds=0, minutes=0, hours=0;
+Timer_Mode mode=COUNT_UP;
+
+ISR(TIMER1_COMPA_vect){
+	if(mode == COUNT_UP){
+		seconds++;
+		if(seconds>=60){minutes++;seconds=0;}
+		if(minutes>=60){hours++;minutes=0;}
+		if(hours>=24)hours=0;
+	}else{
+		seconds--;
+		if(seconds<0){minutes--;seconds=59;}
+		if(minutes<0){hours--;minutes=59;}
+		if(hours<0)hours=23;
+	}
+}
+
+int main(void){
+	// setting first 6 pins of PORTA as outputs and reset them
+	DDRA |= 0x3F;
+	PORTC &= ~(0x3F);
+
+	// setting whole PORTB as input and enable the PU resistor
+	DDRB = 0x00;
+	PORTB = 0xFF;
+
+	// setting first 4 pins of PORTC as outputs and reset them
+	DDRC |= 0x0F;
+	PORTC &= ~(0x0F);
+
+	// setting PD2 & PD3 as inputs, with PD2 has internal resistor
+	// setting PD0, PD4, and PD5 as outputs and reset them
+	DDRD &= ~(0x0C);
+	DDRD |= (0x31);
+	PORTD |= 0x04;
+	PORTD &= ~(0x31);
+
+	timer1_CTC_init();
+	while(1){
+		//Display seconds
+		PORTA = (PORTA & 0xC0) | (1<<5);
+		PORTC = (PORTC & 0xF0) | ((seconds%10) & 0x0F);
+		_delay_ms(2);
+		PORTA = (PORTA & 0xC0) | (1<<4);
+		PORTC = (PORTC & 0xF0) | ((seconds/10%10) & 0x0F);
+		_delay_ms(2);
+
+		//Display minutes
+		PORTA = (PORTA & 0xC0) | (1<<3);
+		PORTC = (PORTC & 0xF0) | ((minutes%10) & 0x0F);
+		_delay_ms(2);
+		PORTA = (PORTA & 0xC0) | (1<<2);
+		PORTC = (PORTC & 0xF0) | ((minutes/10%10) & 0x0F);
+		_delay_ms(2);
+
+		//Display hours
+		PORTA = (PORTA & 0xC0) | (1<<1);
+		PORTC = (PORTC & 0xF0) | ((hours%10) & 0x0F);
+		_delay_ms(2);
+		PORTA = (PORTA & 0xC0) | (1<<0);
+		PORTC = (PORTC & 0xF0) | ((hours/10%10) & 0x0F);
+		_delay_ms(2);
+	}
+}
+
+void timer1_CTC_init(void){
+	TCCR1A = (1<<FOC1A)|(1<<FOC1B);
+	TCCR1B = (1<<WGM12)|(1<<CS10)|(1<<CS12);
+	TCNT1  = 0;
+	OCR1A  = 15625;
+	TIMSK  |=(1<<OCIE1A);
+	SREG   |=(1<<7);
+}
+

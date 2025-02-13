@@ -1,0 +1,42 @@
+/*
+ * miniProject.c
+ *
+ *  Created on: Feb 10, 2025
+ *      Author: Hesham
+ */
+
+#include<avr/io.h>
+#include<avr/interrupt.h>
+
+void timer1_CTC_init(void);
+
+ISR(TIMER1_COMPA_vect){
+	//TCNT1 = 0;
+	PORTC ^= (1<<0);
+}
+
+int main(void){
+ DDRC |=(1<<0);
+ PORTC &=~(1<<0);
+ timer1_CTC_init();
+}
+
+void timer1_CTC_init(void) {
+    // Set CTC mode (Clear Timer on Compare Match) using WGM12 in TCCR1B
+    TCCR1B = (1 << WGM12);
+
+    // Set prescaler to 1024
+    TCCR1B |= (1 << CS12) | (1 << CS10);
+
+    // Initialize counter to 0
+    TCNT1 = 0;
+
+    // Set OCR1A for 1-second delay
+    OCR1A = 15625;
+
+    // Enable Timer1 Compare Match A interrupt
+    TIMSK |= (1 << OCIE1A);
+
+    // Enable global interrupts (using sei() is more common)
+    sei();
+}

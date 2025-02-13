@@ -1,0 +1,35 @@
+/*
+ * miniProject.c
+ *
+ *  Created on: Feb 10, 2025
+ *      Author: Hesham
+ */
+
+#include<avr/io.h>
+#include<avr/interrupt.h>
+
+void timer1_CTC_init(void);
+
+ISR(TIMER1_COMPA_vect){
+	//TCNT1 = 0;
+	PORTC ^= (1<<0);
+}
+
+int main(void){
+ DDRC |=(1<<0);
+ PORTC &=~(1<<0);
+ timer1_CTC_init();
+ while(1){
+
+ }
+}
+
+void timer1_CTC_init(void){
+	TCCR1A = (1<<FOC1A)|(1<<FOC1B);
+	TCCR1B = (1<<CS10)|(1<<CS12)|(1<<WGM12);
+	TCNT1  = 0;
+	OCR1A  = 15625;
+	TIMSK  |=(1<<OCIE1A);
+	SREG   |=(1<<7);
+}
+
